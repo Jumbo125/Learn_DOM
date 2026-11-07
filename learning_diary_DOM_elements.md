@@ -22,6 +22,10 @@ document.addEventListener("DOMContentLoaded", function () {
 }); 
 ```
 
+### Side-Note Defer
+
+
+
 ### Eigenschaften der Document Objekt
 ```
 document.title          // Titel der Seite
@@ -43,7 +47,8 @@ document.querySelectorAll("li");
 document.createElement("div");
 document.addEventListener("click", handler);
 ```
-### 
+###  SIDE-Note DEFER
+defer lädt ein externes JavaScript parallel zum HTML, ohne das Laden der Seite zu blockieren. Es führt das Script erst aus, nachdem das HTML-DOM aufgebaut wurde.
 
 ## Manipulation via id and class
 
@@ -105,3 +110,4 @@ const li = document.createElement("li");
 li.textContent = "Item 4";
 document.querySelector("#myList").append(li);
 ```
+

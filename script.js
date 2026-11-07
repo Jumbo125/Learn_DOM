@@ -3,7 +3,9 @@
 document.addEventListener("DOMContentLoaded", function () {
   // DOM ist bereit
 
-document.querySelector("#color").classList.add("test");
+const li = document.createElement("li");
+li.textContent = "Item 4";
+document.querySelector("#myList").append(li);
 
 
 

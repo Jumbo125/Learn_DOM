@@ -94,3 +94,14 @@ document.querySelectorAll("#menu > li");
 document.querySelector("#menu > li");
 ```
 
+### ADD LIST ITEMS
+
+```
+$("#myList").append("<li>Item 4</li>");
+```
+
+```
+const li = document.createElement("li");
+li.textContent = "Item 4";
+document.querySelector("#myList").append(li);
+```

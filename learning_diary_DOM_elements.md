@@ -111,3 +111,34 @@ li.textContent = "Item 4";
 document.querySelector("#myList").append(li);
 ```
 
+## HTML TAGS
+
+### DIV
+
+```
+const div = document.querySelector("#myDiv");
+
+div.id;           // die ID, z. B. "myDiv"
+div.className;    // CSS-Klassen als Text
+div.classList;    // CSS-Klassen verwalten: add(), remove(), toggle()
+div.textContent;  // reiner Textinhalt
+div.innerHTML;    // Inhalt als HTML
+div.style;        // Inline-CSS lesen oder setzen
+div.children;     // direkte Kindelemente
+div.parentElement;// Elternelement
+div.dataset;      // data-Attribute, z. B. data-user-id
+div.hidden;       // Element verstecken/anzeigen
+```
+
+```
+jQuery
+$("#myDiv").wrap('<div class="wrapper"></div>');
+
+const element = document.querySelector("#myDiv");
+const wrapper = document.createElement("div");
+
+wrapper.classList.add("wrapper");
+element.before(wrapper);
+wrapper.append(element);
+
+```

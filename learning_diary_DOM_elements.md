@@ -16,7 +16,8 @@ Statt wie bisher:
 
 ### ES6
 
-```document.addEventListener("DOMContentLoaded", function () {
+```
+document.addEventListener("DOMContentLoaded", function () {
   // DOM ist bereit
 }); 
 ```
@@ -43,4 +44,53 @@ document.createElement("div");
 document.addEventListener("click", handler);
 ```
 ### 
+
+## Manipulation via id and class
+
+Früher wurde mit $(id) oder $(class) gearbeitet. Wie macht man das nun?
+
+### Selektieren
+
+#### ID
+```
+//jQuery
+$("#meinId");
+```
+
+```
+// Modernes JavaScript
+document.querySelector("#meinId");
+```
+
+#### Class
+```
+// jQuery
+$(".meineKlasse");
+```
+
+```
+// Modernes JavaScript: erstes passendes Element
+document.querySelector(".meineKlasse");
+```
+
+#### Alle Elemente selekiteren
+```
+// jQuery
+$(".meineKlasse");
+
+// Modernes JavaScript: alle passenden Elemente
+document.querySelectorAll(".meineKlasse");
+```
+
+### Children
+```
+// Alle .item irgendwo innerhalb von #menu
+document.querySelectorAll("#menu .item");
+
+// Nur direkte li-Kinder von #menu
+document.querySelectorAll("#menu > li");
+
+// Erstes direktes li-Kind
+document.querySelector("#menu > li");
+```
 

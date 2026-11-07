@@ -29,6 +29,68 @@ Ein `<div>` ist standardmäßig ein **Block-Element**. Es beginnt in einer neuen
 
 Das `<div>` fasst die Inhalte zusammen; die Klasse `profil` gibt dem gesamten Bereich Hintergrundfarbe und Innenabstand.
 
+## Eigenschaften, Attribute und Methoden eines `<div>`
+
+Ein `<div>` kann über JavaScript gelesen und verändert werden. Häufige **Eigenschaften** sind:
+
+```js
+const div = document.querySelector("#myDiv");
+
+div.id;            // ID des Elements
+div.className;     // CSS-Klassen als Text
+div.classList;     // CSS-Klassen verwalten
+div.textContent;   // Textinhalt
+div.innerHTML;     // Inhalt als HTML
+div.children;      // direkte Kindelemente
+div.dataset;       // data-Attribute
+```
+
+**Attribute** stehen im HTML, zum Beispiel `id`, `class`, `title` oder `data-*`. Man kann sie mit `getAttribute()` auslesen und mit `setAttribute()` setzen.
+
+```js
+div.setAttribute("title", "Weitere Informationen");
+div.getAttribute("title");
+```
+
+Häufige **Methoden**:
+
+```js
+div.classList.add("active");       // CSS-Klasse hinzufügen
+div.classList.remove("active");    // CSS-Klasse entfernen
+div.classList.toggle("active");    // Klasse ein- oder ausschalten
+div.append("Neuer Text");          // Inhalt am Ende hinzufügen
+div.remove();                       // Element aus dem DOM entfernen
+div.addEventListener("click", () => {
+  console.log("Div wurde angeklickt");
+});                                 // Auf ein Ereignis reagieren
+```
+
+## Inhalt eines `<div>` setzen
+
+Der Inhalt kann zuerst in einer Variable gespeichert und anschließend in das `<div>` geschrieben werden:
+
+```js
+const message = "Hallo Anna";
+div.textContent = message;
+```
+
+`textContent` schreibt **reinen Text**. HTML-Tags werden dabei nicht ausgeführt, sondern sichtbar dargestellt:
+
+```js
+div.textContent = "<strong>Wichtig</strong>";
+// Im Browser sichtbar: <strong>Wichtig</strong>
+```
+
+`innerHTML` interpretiert den Inhalt dagegen als **HTML**:
+
+```js
+const content = "<strong>Wichtig</strong>";
+div.innerHTML = content;
+// Im Browser sichtbar: Wichtig (fett formatiert)
+```
+
+Für Texte – besonders Texte von Benutzerinnen und Benutzern – ist `textContent` die sichere Standardwahl. `innerHTML` verwendet man nur für vertrauenswürdigen HTML-Inhalt.
+
 ## Wann verwende ich welches Element?
 
 - `<div>` ist ein neutraler Container ohne eigene Bedeutung. Er eignet sich für Layout, Styling oder das Gruppieren von Elementen, wenn kein passendes semantisches HTML-Element existiert.
@@ -69,21 +131,6 @@ card.dataset.status; // "active"
 
 Für große oder zentrale Anwendungsdaten verwendet man besser JavaScript-Objekte, eine API oder eine Datenbank.
 
-## Häufige Methoden für ein `div`
+## Präsentationsfolie
 
-```js
-const div = document.querySelector("#myDiv");
-
-div.classList.add("active");       // CSS-Klasse hinzufügen
-div.classList.remove("active");    // CSS-Klasse entfernen
-div.classList.toggle("active");    // Klasse ein- oder ausschalten
-div.setAttribute("title", "Info"); // HTML-Attribut setzen
-div.getAttribute("title");         // HTML-Attribut auslesen
-div.append("Neuer Text");          // Inhalt am Ende hinzufügen
-div.remove();                       // Element aus dem DOM entfernen
-div.addEventListener("click", () => {
-  console.log("Div wurde angeklickt");
-});                                 // Auf ein Ereignis reagieren
-```
-
-Diese Methoden verändern das Element, lesen Attribute aus oder reagieren auf Aktionen der Benutzerin bzw. des Benutzers.
+![Präsentationsfolie zu div](div_pres.png)

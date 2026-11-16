@@ -191,3 +191,36 @@ Cool, `event.preventDefault()` taucht hier wieder auf - gleiche Regel wie oben, 
 
 ### SIDE-Note preventDefault
 Ohne `event.preventDefault()` macht der Browser bei `submit` das, was er seit den 90ern macht: Seite neu laden und Daten per GET/POST an die im `action`-Attribut angegebene URL schicken. Das wollte ich für mein Lernbeispiel nicht, deshalb der Reflex, das von Anfang an mitzudenken - genau wie bei `DOMContentLoaded` oben.
+
+### BUTTON
+
+Nach dem `<form>` war der `<button>` fast schon eine Erholung - hier hatte ich das Gefühl, dass sich vanilla JS und jQuery kaum unterscheiden. `.click()`-Handler fühlen sich in beiden Welten fast identisch an, nur die Syntax drumherum ist anders.
+
+```
+// jQuery
+$("#meinButton").on("click", function () {
+  $(this).prop("disabled", true);
+});
+```
+
+```
+// Modernes JavaScript
+const button = document.querySelector("#meinButton");
+
+button.addEventListener("click", function () {
+  button.disabled = true;
+});
+```
+
+Was mir aufgefallen ist: `disabled` ist bei vanilla JS einfach eine direkte Property auf dem Element, kein `.prop()` oder `.attr()` nötig. Weniger Indirektion, gefällt mir.
+
+```
+button.disabled;       // true/false - Button deaktivieren/aktivieren
+button.type;           // "submit", "reset" oder "button"
+button.textContent;    // Beschriftung des Buttons
+button.form;           // referenziert das umgebende <form>-Element
+button.click();        // Klick programmatisch auslösen
+```
+
+### SIDE-Note button type
+Ein `<button>` ohne explizites `type`-Attribut ist standardmäßig `type="submit"` - innerhalb eines `<form>` löst ein Klick also automatisch ein Submit-Event aus. Das hat mich am Anfang überrascht, weil ich in jQuery-Projekten nie drüber nachdenken musste. Wenn ich nur einen reinen Aktions-Button ohne Submit-Verhalten will, brauche ich explizit `type="button"`.

@@ -22,10 +22,6 @@ document.addEventListener("DOMContentLoaded", function () {
 }); 
 ```
 
-### Side-Note Defer
-
-
-
 ### Eigenschaften der Document Objekt
 ```
 document.title          // Titel der Seite
@@ -129,6 +125,11 @@ div.parentElement;// Elternelement
 div.dataset;      // data-Attribute, z. B. data-user-id
 div.hidden;       // Element verstecken/anzeigen
 ```
+
+### SIDE-Note textContent vs. innerHTML
+`textContent` setzt den Inhalt als reinen Text, auch wenn der String HTML-Tags enthält (z. B. `<li>` würde als Text angezeigt, nicht als Element). `innerHTML` parst den String als HTML und baut daraus echte Elemente.
+
+Deshalb wurde oben bei "ADD LIST ITEMS" bewusst `li.textContent` statt `li.innerHTML` verwendet: Bei Nutzereingaben öffnet `innerHTML` ein XSS-Risiko (eingeschleuster `<script>`- oder `<img onerror>`-Code würde ausgeführt). Faustregel: `textContent` für reinen Text, `innerHTML` nur für vertrauenswürdiges, selbst erzeugtes HTML.
 
 ```
 jQuery

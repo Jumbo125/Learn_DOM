@@ -143,3 +143,51 @@ element.before(wrapper);
 wrapper.append(element);
 
 ```
+
+### FORM
+
+Heute war ich an der Reihe, mich mit `<form>` auseinanderzusetzen - und ehrlich gesagt hat's mich kurz zurück in die jQuery-Zeit katapultiert. Bei jQuery hab ich `$("#meinForm").on("submit", ...)` praktisch im Schlaf geschrieben, musste mir hier aber erst wieder bewusst machen, dass `event.preventDefault()` nötig ist, sonst lädt die Seite stur neu. Klassischer Reflex-Fehler am Anfang.
+
+```
+// jQuery
+$("#meinForm").on("submit", function (event) {
+  event.preventDefault();
+  const name = $("#name").val();
+  console.log(name);
+});
+```
+
+```
+// Modernes JavaScript
+const form = document.querySelector("#meinForm");
+
+form.addEventListener("submit", function (event) {
+  event.preventDefault();
+  const name = form.elements.name.value;
+  console.log(name);
+});
+```
+
+Was mich überrascht hat: `form.elements` gibt mir Zugriff auf jedes Feld über seinen `name`-Attributwert, ohne dass ich jedes einzelne per `querySelector` suchen muss. Fühlt sich fast so bequem an wie jQuery, nur eben nativ.
+
+```
+form.elements.name;      // Input-Feld mit name="name"
+form.elements["email"];  // alternative Schreibweise
+form.reset();            // Formular zurücksetzen
+form.checkValidity();    // HTML5-Validierung prüfen, ohne abzusenden
+```
+
+Richtig gefreut hab ich mich über `FormData` - das hätte mir früher bei jQuery-Projekten einiges an manuellem Zusammenklicken der Werte erspart:
+
+```
+form.addEventListener("submit", function (event) {
+  event.preventDefault();
+  const data = new FormData(form);
+  console.log(data.get("name"));
+});
+```
+
+Cool, `event.preventDefault()` taucht hier wieder auf - gleiche Regel wie oben, aber diesmal hab ich sie direkt erkannt, ohne nachdenken zu müssen. Fühlt sich schon ein bisschen nach Routine an.
+
+### SIDE-Note preventDefault
+Ohne `event.preventDefault()` macht der Browser bei `submit` das, was er seit den 90ern macht: Seite neu laden und Daten per GET/POST an die im `action`-Attribut angegebene URL schicken. Das wollte ich für mein Lernbeispiel nicht, deshalb der Reflex, das von Anfang an mitzudenken - genau wie bei `DOMContentLoaded` oben.

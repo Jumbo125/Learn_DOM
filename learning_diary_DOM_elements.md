@@ -224,3 +224,82 @@ button.click();        // Klick programmatisch auslösen
 
 ### SIDE-Note button type
 Ein `<button>` ohne explizites `type`-Attribut ist standardmäßig `type="submit"` - innerhalb eines `<form>` löst ein Klick also automatisch ein Submit-Event aus. Das hat mich am Anfang überrascht, weil ich in jQuery-Projekten nie drüber nachdenken musste. Wenn ich nur einen reinen Aktions-Button ohne Submit-Verhalten will, brauche ich explizit `type="button"`.
+
+### INPUT
+
+Beim `<input>` hat's mich erwischt: Ich wollte reflexartig `$("#meinInput").val()` schreiben und musste mich bremsen. In jQuery war `.val()` meine Universal-Lösung für jedes Formularfeld, egal ob Text, Checkbox oder Radio. Vanilla JS zwingt mich, genauer hinzuschauen, welcher Input-Typ gerade vor mir liegt.
+
+```
+// jQuery
+$("#meinInput").val();
+$("#meinCheckbox").is(":checked");
+```
+
+```
+// Modernes JavaScript
+const input = document.querySelector("#meinInput");
+input.value;
+
+const checkbox = document.querySelector("#meinCheckbox");
+checkbox.checked;
+```
+
+Das war mein Aha-Moment: `.val()` gibt es schlicht nicht - bei Text-Inputs heißt es `value`, bei Checkboxen und Radios `checked`. Zwei Properties statt einer Methode, aber dafür ist sofort klar, was gemeint ist.
+
+```
+input.value;      // aktueller Textwert
+input.checked;    // bei checkbox/radio: true/false
+input.type;       // "text", "email", "checkbox", "radio" ...
+input.placeholder;// Platzhaltertext
+input.disabled;   // Feld deaktivieren
+input.focus();    // Fokus setzen
+```
+
+Außerdem live mitbekommen, dass es bei Eingabefeldern zwei Events gibt, die ich früher mit jQuery nicht bewusst unterschieden habe:
+
+```
+// feuert bei jedem Tastendruck / jeder Änderung sofort
+input.addEventListener("input", function () {
+  console.log(input.value);
+});
+
+// feuert erst, wenn das Feld den Fokus verliert
+input.addEventListener("change", function () {
+  console.log(input.value);
+});
+```
+
+### SIDE-Note input vs. change
+`input` reagiert auf jede einzelne Änderung in Echtzeit (gut für Live-Validierung oder Zeichenzähler), `change` erst, wenn das Feld seinen Wert committet und den Fokus verliert (gut für Checkboxen, Selects oder um nicht bei jedem Tastendruck eine teure Funktion auszulösen). Vorher war mir bei `$(...).on("change", ...)` in jQuery gar nicht bewusst, dass es diese zwei getrennten Signale überhaupt gibt.
+
+### TABLE
+
+Bei `<table>` dachte ich zuerst "ach, das ist doch nur ein weiteres Element mit Kindern" - und bin dann ziemlich schnell draufgekommen, dass Tabellen ihre eigenen, sehr praktischen Spezial-Methoden mitbringen, auf die ich bei jQuery nie geachtet habe, weil ich dort meist stur mit `.append()` gearbeitet hab.
+
+```
+// jQuery
+$("#meineTabelle tbody").append("<tr><td>Neue Zeile</td></tr>");
+```
+
+```
+// Modernes JavaScript
+const table = document.querySelector("#meineTabelle");
+const row = table.insertRow();
+const cell = row.insertCell();
+cell.textContent = "Neue Zeile";
+```
+
+Das hat mich überrascht: Ich muss gar nicht erst `createElement("tr")` und `createElement("td")` von Hand bauen und verschachteln - `insertRow()` und `insertCell()` machen das direkt am richtigen Platz in der Tabellenstruktur, inklusive automatischer Platzierung ans Ende.
+
+```
+table.rows;              // alle <tr>-Zeilen der Tabelle (live Collection)
+table.rows[0].cells;     // alle <td>/<th>-Zellen dieser Zeile
+table.tHead;             // referenziert <thead>, falls vorhanden
+table.tBodies;           // alle <tbody>-Elemente
+table.insertRow(0);      // neue Zeile an Position 0 einfügen
+table.deleteRow(0);      // Zeile an Position 0 löschen
+row.insertCell(-1);      // neue Zelle ans Ende der Zeile anhängen
+```
+
+### SIDE-Note live Collections
+`table.rows` ist eine `HTMLCollection`, keine normale Array - und sie ist "live", das heißt sie aktualisiert sich automatisch, wenn ich Zeilen hinzufüge oder lösche. Das hat mich kurz verwirrt, weil ich aus jQuery gewohnt war, dass `$(...)` immer eine feste Momentaufnahme liefert. Für eine `for`-Schleife, in der ich gleichzeitig Zeilen lösche, ist das eine Falle: die Collection schrumpft währenddessen mit, und ich überspringe Elemente, wenn ich nicht rückwärts iteriere oder vorher in ein echtes Array kopiere (`Array.from(table.rows)`).

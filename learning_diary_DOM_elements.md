@@ -384,3 +384,33 @@ select.options[0].selected; // true/false, ob diese Option ausgewählt ist
 
 ### SIDE-Note multiple select
 Bei `<select multiple>` reicht `select.value` nicht mehr, weil es nur den ersten ausgewählten Wert liefert. Dafür gibt's `select.selectedOptions`, eine Collection aller gerade markierten `<option>`-Elemente - die muss ich dann selbst durchlaufen (z. B. mit `Array.from(select.selectedOptions).map(o => o.value)`), um alle Werte zu bekommen. In jQuery war mir dieser Unterschied nie bewusst, weil `.val()` bei Multi-Selects einfach brav ein Array zurückgegeben hat.
+
+### CANVAS
+
+Beim `<canvas>` ist mir zum ersten Mal aufgefallen, dass der ganze jQuery-Vergleich hier gar nicht greift - jQuery hatte nie wirklich eine eigene API fürs Zeichnen, man ist immer direkt auf die native Canvas-API runter. Fühlt sich fast befreiend an, kein "früher/heute" im Kopf zu haben, sondern einfach komplett neues Terrain.
+
+```
+const canvas = document.querySelector("#meineCanvas");
+const ctx = canvas.getContext("2d");
+
+ctx.fillStyle = "steelblue";
+ctx.fillRect(10, 10, 100, 50);
+
+ctx.beginPath();
+ctx.arc(150, 75, 40, 0, Math.PI * 2);
+ctx.fillStyle = "tomato";
+ctx.fill();
+```
+
+Der erste Stolperstein: `canvas` selbst ist nur die Leinwand (DOM-Element), gezeichnet wird nie direkt auf `canvas`, sondern immer über den `context`, den ich mir via `getContext("2d")` holen muss. Ohne diesen Schritt geht nichts.
+
+```
+canvas.width;             // Breite in Pixel (Zeichenfläche, nicht CSS!)
+canvas.height;            // Höhe in Pixel (Zeichenfläche, nicht CSS!)
+ctx.clearRect(0, 0, canvas.width, canvas.height); // Fläche löschen
+ctx.fillText("Hallo", 10, 100); // Text zeichnen
+canvas.toDataURL();       // aktueller Inhalt als Base64-Bild-URL
+```
+
+### SIDE-Note width/height vs. CSS
+`canvas.width` und `canvas.height` (als Attribute oder Properties) bestimmen die tatsächliche Pixel-Auflösung der Zeichenfläche - das ist etwas komplett anderes als die Darstellungsgröße per CSS (`style.width`/`style.height`). Setze ich nur die CSS-Größe, wird die Zeichnung einfach hochskaliert und wirkt unscharf/verzerrt. Für scharfe Ergebnisse muss ich beides im Blick haben, im Idealfall sogar `canvas.width` an die Pixeldichte (`devicePixelRatio`) des Bildschirms anpassen. Das ist mir bei keinem anderen Element bisher untergekommen.

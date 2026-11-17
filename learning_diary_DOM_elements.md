@@ -337,3 +337,50 @@ list.querySelectorAll("li.done"); // nur abgehakte Punkte, z. B. Todo-Liste
 
 ### SIDE-Note ul vs. ol
 `<ul>` und `<ol>` teilen sich dieselbe DOM-API (`children`, `append`, etc.) - der einzige Unterschied liegt in der Semantik und im `start`/`type`-Attribut von `<ol>` für nummerierte Listen. Gut zu wissen, falls ich mal zwischen beiden wechsle: am JS-Code ändert sich dabei nichts.
+
+### SELECT und OPTION
+
+Beim `<select>` bin ich wieder auf meinen alten `.val()`-Reflex aus dem `<input>`-Kapitel gestoßen - und tatsächlich: genau wie bei Text-Inputs heißt es auch hier `value`. Diesmal hab ich mich aber schon nicht mehr erschrocken, sondern direkt richtig geschrieben. Kleiner Fortschritt, aber ich merk ihn.
+
+```
+// jQuery
+$("#meinSelect").val();
+$("#meinSelect").val("de");
+```
+
+```
+// Modernes JavaScript
+const select = document.querySelector("#meinSelect");
+select.value;        // aktuell ausgewählter Wert
+select.value = "de"; // Auswahl programmatisch setzen
+```
+
+Spannender fand ich das Erzeugen neuer `<option>`-Elemente - hier gibt's extra den `Option`-Konstruktor, den ich vorher noch nie gesehen hab, obwohl ich sonst immer brav `createElement` verwende:
+
+```
+// jQuery
+$("#meinSelect").append('<option value="at">Österreich</option>');
+```
+
+```
+// Modernes JavaScript - Variante 1: createElement wie gewohnt
+const option = document.createElement("option");
+option.value = "at";
+option.textContent = "Österreich";
+select.append(option);
+
+// Variante 2: der eigene Option()-Konstruktor
+const option2 = new Option("Österreich", "at");
+select.append(option2);
+```
+
+```
+select.options;           // alle <option>-Kinder (live HTMLCollection)
+select.selectedIndex;     // Index der aktuell ausgewählten Option
+select.selectedOptions;   // bei multiple: alle ausgewählten Optionen
+select.options[0].value;  // Wert der ersten Option
+select.options[0].selected; // true/false, ob diese Option ausgewählt ist
+```
+
+### SIDE-Note multiple select
+Bei `<select multiple>` reicht `select.value` nicht mehr, weil es nur den ersten ausgewählten Wert liefert. Dafür gibt's `select.selectedOptions`, eine Collection aller gerade markierten `<option>`-Elemente - die muss ich dann selbst durchlaufen (z. B. mit `Array.from(select.selectedOptions).map(o => o.value)`), um alle Werte zu bekommen. In jQuery war mir dieser Unterschied nie bewusst, weil `.val()` bei Multi-Selects einfach brav ein Array zurückgegeben hat.

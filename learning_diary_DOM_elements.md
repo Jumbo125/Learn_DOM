@@ -303,3 +303,37 @@ row.insertCell(-1);      // neue Zelle ans Ende der Zeile anhängen
 
 ### SIDE-Note live Collections
 `table.rows` ist eine `HTMLCollection`, keine normale Array - und sie ist "live", das heißt sie aktualisiert sich automatisch, wenn ich Zeilen hinzufüge oder lösche. Das hat mich kurz verwirrt, weil ich aus jQuery gewohnt war, dass `$(...)` immer eine feste Momentaufnahme liefert. Für eine `for`-Schleife, in der ich gleichzeitig Zeilen lösche, ist das eine Falle: die Collection schrumpft währenddessen mit, und ich überspringe Elemente, wenn ich nicht rückwärts iteriere oder vorher in ein echtes Array kopiere (`Array.from(table.rows)`).
+
+### UL
+
+Nach den `<table>`-Spezial-Methoden war `<ul>` fast ernüchternd einfach - hier gibt's keine `insertRow()`-Magie, es ist wieder ganz normales Kinder-Handling wie beim ersten "ADD LIST ITEMS"-Beispiel ganz oben. Gut zu merken: eine `<ul>` selbst ist nichts Besonderes, interessant wird's erst bei den `<li>`-Kindern.
+
+```
+// jQuery
+$("#meineListe").append("<li>Neuer Punkt</li>");
+$("#meineListe li").eq(1).remove();
+```
+
+```
+// Modernes JavaScript
+const list = document.querySelector("#meineListe");
+
+const li = document.createElement("li");
+li.textContent = "Neuer Punkt";
+list.append(li);
+
+list.children[1].remove();
+```
+
+Was mir hier wieder aufgefallen ist: `.eq(1)` aus jQuery (das n-te Element einer Auswahl) hat keinen direkten Methoden-Ersatz, ich greife einfach über `list.children[1]` auf den Index zu - kein Umweg über eine jQuery-Wrapper-Methode nötig, einfacher Array-Zugriff reicht.
+
+```
+list.children;          // alle direkten <li>-Kinder (live HTMLCollection)
+list.children.length;   // Anzahl der Listenpunkte
+list.firstElementChild; // erster <li>-Punkt
+list.lastElementChild;  // letzter <li>-Punkt
+list.querySelectorAll("li.done"); // nur abgehakte Punkte, z. B. Todo-Liste
+```
+
+### SIDE-Note ul vs. ol
+`<ul>` und `<ol>` teilen sich dieselbe DOM-API (`children`, `append`, etc.) - der einzige Unterschied liegt in der Semantik und im `start`/`type`-Attribut von `<ol>` für nummerierte Listen. Gut zu wissen, falls ich mal zwischen beiden wechsle: am JS-Code ändert sich dabei nichts.

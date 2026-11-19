@@ -144,11 +144,11 @@ wrapper.append(element);
 
 ```
 
-### FORM
+## Formulare
 
-Heute war ich an der Reihe, mich mit `<form>` auseinanderzusetzen - und ehrlich gesagt hat's mich kurz zurück in die jQuery-Zeit katapultiert. Bei jQuery hab ich `$("#meinForm").on("submit", ...)` praktisch im Schlaf geschrieben, musste mir hier aber erst wieder bewusst machen, dass `event.preventDefault()` nötig ist, sonst lädt die Seite stur neu. Klassischer Reflex-Fehler am Anfang.
+Bei Formularen ist der Unterschied zu jQuery vor allem, wie ich an die Elemente und deren Werte komme. Das Submit-Event bleibt im Prinzip gleich. `preventDefault()` verhindert dabei das normale Absenden des Formulars, wenn ich die Daten zuerst mit JavaScript verarbeiten möchte.
 
-```
+```js
 // jQuery
 $("#meinForm").on("submit", function (event) {
   event.preventDefault();
@@ -157,8 +157,9 @@ $("#meinForm").on("submit", function (event) {
 });
 ```
 
-```
-// Modernes JavaScript
+Ohne jQuery:
+
+```js
 const form = document.querySelector("#meinForm");
 
 form.addEventListener("submit", function (event) {
@@ -168,18 +169,18 @@ form.addEventListener("submit", function (event) {
 });
 ```
 
-Was mich überrascht hat: `form.elements` gibt mir Zugriff auf jedes Feld über seinen `name`-Attributwert, ohne dass ich jedes einzelne per `querySelector` suchen muss. Fühlt sich fast so bequem an wie jQuery, nur eben nativ.
+Mit `form.elements` kann ich direkt über das `name`-Attribut auf die Eingabefelder zugreifen. Ich muss also nicht zwingend jedes Feld extra selektieren.
 
-```
-form.elements.name;      // Input-Feld mit name="name"
-form.elements["email"];  // alternative Schreibweise
-form.reset();            // Formular zurücksetzen
-form.checkValidity();    // HTML5-Validierung prüfen, ohne abzusenden
+```js
+form.elements.name;
+form.elements["email"];
+form.reset();
+form.checkValidity();
 ```
 
-Richtig gefreut hab ich mich über `FormData` - das hätte mir früher bei jQuery-Projekten einiges an manuellem Zusammenklicken der Werte erspart:
+Für mehrere Werte gibt es außerdem `FormData`:
 
-```
+```js
 form.addEventListener("submit", function (event) {
   event.preventDefault();
   const data = new FormData(form);
@@ -187,137 +188,118 @@ form.addEventListener("submit", function (event) {
 });
 ```
 
-Cool, `event.preventDefault()` taucht hier wieder auf - gleiche Regel wie oben, aber diesmal hab ich sie direkt erkannt, ohne nachdenken zu müssen. Fühlt sich schon ein bisschen nach Routine an.
+## Button
 
-### SIDE-Note preventDefault
-Ohne `event.preventDefault()` macht der Browser bei `submit` das, was er seit den 90ern macht: Seite neu laden und Daten per GET/POST an die im `action`-Attribut angegebene URL schicken. Das wollte ich für mein Lernbeispiel nicht, deshalb der Reflex, das von Anfang an mitzudenken - genau wie bei `DOMContentLoaded` oben.
+Einen Klick registriere ich jetzt über `addEventListener`. Eine Eigenschaft wie `disabled` kann ich danach direkt setzen.
 
-### BUTTON
-
-Nach dem `<form>` war der `<button>` fast schon eine Erholung - hier hatte ich das Gefühl, dass sich vanilla JS und jQuery kaum unterscheiden. `.click()`-Handler fühlen sich in beiden Welten fast identisch an, nur die Syntax drumherum ist anders.
-
-```
+```js
 // jQuery
 $("#meinButton").on("click", function () {
   $(this).prop("disabled", true);
 });
-```
 
-```
-// Modernes JavaScript
+// JavaScript
 const button = document.querySelector("#meinButton");
-
 button.addEventListener("click", function () {
   button.disabled = true;
 });
 ```
 
-Was mir aufgefallen ist: `disabled` ist bei vanilla JS einfach eine direkte Property auf dem Element, kein `.prop()` oder `.attr()` nötig. Weniger Indirektion, gefällt mir.
+Weitere Eigenschaften bzw. Methoden eines Buttons:
 
+```js
+button.disabled;     // aktiviert/deaktiviert
+button.type;         // submit, reset oder button
+button.textContent;  // Text
+button.form;         // zugehöriges Formular
+button.click();      // Klick per Code auslösen
 ```
-button.disabled;       // true/false - Button deaktivieren/aktivieren
-button.type;           // "submit", "reset" oder "button"
-button.textContent;    // Beschriftung des Buttons
-button.form;           // referenziert das umgebende <form>-Element
-button.click();        // Klick programmatisch auslösen
-```
 
-### SIDE-Note button type
-Ein `<button>` ohne explizites `type`-Attribut ist standardmäßig `type="submit"` - innerhalb eines `<form>` löst ein Klick also automatisch ein Submit-Event aus. Das hat mich am Anfang überrascht, weil ich in jQuery-Projekten nie drüber nachdenken musste. Wenn ich nur einen reinen Aktions-Button ohne Submit-Verhalten will, brauche ich explizit `type="button"`.
+Innerhalb eines Formulars sollte ich bei einem normalen Aktionsbutton `type="button"` angeben. Sonst wird standardmäßig ein Submit ausgelöst.
 
-### INPUT
+## Input
 
-Beim `<input>` hat's mich erwischt: Ich wollte reflexartig `$("#meinInput").val()` schreiben und musste mich bremsen. In jQuery war `.val()` meine Universal-Lösung für jedes Formularfeld, egal ob Text, Checkbox oder Radio. Vanilla JS zwingt mich, genauer hinzuschauen, welcher Input-Typ gerade vor mir liegt.
+Hier verwende ich statt `.val()` einfach `.value`. Bei Checkboxen oder Radio-Buttons ist dagegen `.checked` relevant.
 
-```
+```js
 // jQuery
 $("#meinInput").val();
 $("#meinCheckbox").is(":checked");
-```
 
-```
-// Modernes JavaScript
+// JavaScript
 const input = document.querySelector("#meinInput");
-input.value;
+console.log(input.value);
 
 const checkbox = document.querySelector("#meinCheckbox");
-checkbox.checked;
+console.log(checkbox.checked);
 ```
 
-Das war mein Aha-Moment: `.val()` gibt es schlicht nicht - bei Text-Inputs heißt es `value`, bei Checkboxen und Radios `checked`. Zwei Properties statt einer Methode, aber dafür ist sofort klar, was gemeint ist.
+Ein paar nützliche Eigenschaften:
 
-```
-input.value;      // aktueller Textwert
-input.checked;    // bei checkbox/radio: true/false
-input.type;       // "text", "email", "checkbox", "radio" ...
-input.placeholder;// Platzhaltertext
-input.disabled;   // Feld deaktivieren
-input.focus();    // Fokus setzen
+```js
+input.value;
+input.checked;
+input.type;
+input.placeholder;
+input.disabled;
+input.focus();
 ```
 
-Außerdem live mitbekommen, dass es bei Eingabefeldern zwei Events gibt, die ich früher mit jQuery nicht bewusst unterschieden habe:
+Bei den Events muss ich zwischen `input` und `change` unterscheiden. `input` reagiert normalerweise sofort auf Änderungen, `change` erst, wenn eine Änderung übernommen wurde (bei Texteingaben üblicherweise beim Verlassen des Feldes).
 
-```
-// feuert bei jedem Tastendruck / jeder Änderung sofort
+```js
 input.addEventListener("input", function () {
   console.log(input.value);
 });
 
-// feuert erst, wenn das Feld den Fokus verliert
 input.addEventListener("change", function () {
   console.log(input.value);
 });
 ```
 
-### SIDE-Note input vs. change
-`input` reagiert auf jede einzelne Änderung in Echtzeit (gut für Live-Validierung oder Zeichenzähler), `change` erst, wenn das Feld seinen Wert committet und den Fokus verliert (gut für Checkboxen, Selects oder um nicht bei jedem Tastendruck eine teure Funktion auszulösen). Vorher war mir bei `$(...).on("change", ...)` in jQuery gar nicht bewusst, dass es diese zwei getrennten Signale überhaupt gibt.
+Das kann z. B. bei einer Live-Suche wichtig sein, wo ich schon während des Tippens reagieren möchte.
 
-### TABLE
+## Tabelle
 
-Bei `<table>` dachte ich zuerst "ach, das ist doch nur ein weiteres Element mit Kindern" - und bin dann ziemlich schnell draufgekommen, dass Tabellen ihre eigenen, sehr praktischen Spezial-Methoden mitbringen, auf die ich bei jQuery nie geachtet habe, weil ich dort meist stur mit `.append()` gearbeitet hab.
+Für Tabellen gibt es eigene Methoden zum Erstellen oder Löschen von Zeilen. In jQuery habe ich dafür meist HTML angehängt.
 
-```
+```js
 // jQuery
 $("#meineTabelle tbody").append("<tr><td>Neue Zeile</td></tr>");
-```
 
-```
-// Modernes JavaScript
+// JavaScript
 const table = document.querySelector("#meineTabelle");
 const row = table.insertRow();
 const cell = row.insertCell();
 cell.textContent = "Neue Zeile";
 ```
 
-Das hat mich überrascht: Ich muss gar nicht erst `createElement("tr")` und `createElement("td")` von Hand bauen und verschachteln - `insertRow()` und `insertCell()` machen das direkt am richtigen Platz in der Tabellenstruktur, inklusive automatischer Platzierung ans Ende.
+Mit `insertRow()` wird eine Zeile hinzugefügt und mit `insertCell()` eine Zelle in dieser Zeile. Die wichtigsten Zugriffe habe ich mir so notiert:
 
+```js
+table.rows;               // Zeilen
+table.rows[0].cells;      // Zellen der ersten Zeile
+table.tHead;
+table.tBodies;
+table.insertRow(0);       // ganz am Anfang
+table.deleteRow(0);       // erste Zeile löschen
+row.insertCell(-1);       // Zelle hinten anhängen
 ```
-table.rows;              // alle <tr>-Zeilen der Tabelle (live Collection)
-table.rows[0].cells;     // alle <td>/<th>-Zellen dieser Zeile
-table.tHead;             // referenziert <thead>, falls vorhanden
-table.tBodies;           // alle <tbody>-Elemente
-table.insertRow(0);      // neue Zeile an Position 0 einfügen
-table.deleteRow(0);      // Zeile an Position 0 löschen
-row.insertCell(-1);      // neue Zelle ans Ende der Zeile anhängen
-```
 
-### SIDE-Note live Collections
-`table.rows` ist eine `HTMLCollection`, keine normale Array - und sie ist "live", das heißt sie aktualisiert sich automatisch, wenn ich Zeilen hinzufüge oder lösche. Das hat mich kurz verwirrt, weil ich aus jQuery gewohnt war, dass `$(...)` immer eine feste Momentaufnahme liefert. Für eine `for`-Schleife, in der ich gleichzeitig Zeilen lösche, ist das eine Falle: die Collection schrumpft währenddessen mit, und ich überspringe Elemente, wenn ich nicht rückwärts iteriere oder vorher in ein echtes Array kopiere (`Array.from(table.rows)`).
+`table.rows` aktualisiert sich übrigens beim Ändern der Tabelle automatisch. Das muss man beachten, wenn man während einer Schleife Zeilen löscht.
 
-### UL
+## UL und LI
 
-Nach den `<table>`-Spezial-Methoden war `<ul>` fast ernüchternd einfach - hier gibt's keine `insertRow()`-Magie, es ist wieder ganz normales Kinder-Handling wie beim ersten "ADD LIST ITEMS"-Beispiel ganz oben. Gut zu merken: eine `<ul>` selbst ist nichts Besonderes, interessant wird's erst bei den `<li>`-Kindern.
+Bei Listen reicht die normale DOM-Manipulation, also ein Element erstellen und dann anhängen. Ein spezielles `insertRow()` wie bei Tabellen gibt es nicht.
 
-```
+```js
 // jQuery
 $("#meineListe").append("<li>Neuer Punkt</li>");
 $("#meineListe li").eq(1).remove();
 ```
 
-```
-// Modernes JavaScript
+```js
 const list = document.querySelector("#meineListe");
-
 const li = document.createElement("li");
 li.textContent = "Neuer Punkt";
 list.append(li);
@@ -325,71 +307,67 @@ list.append(li);
 list.children[1].remove();
 ```
 
-Was mir hier wieder aufgefallen ist: `.eq(1)` aus jQuery (das n-te Element einer Auswahl) hat keinen direkten Methoden-Ersatz, ich greife einfach über `list.children[1]` auf den Index zu - kein Umweg über eine jQuery-Wrapper-Methode nötig, einfacher Array-Zugriff reicht.
+Über `children` kann ich also auch auf einzelne Listenelemente zugreifen. Die Zählung beginnt bei 0.
 
+```js
+list.children;
+list.children.length;
+list.firstElementChild;
+list.lastElementChild;
+list.querySelectorAll("li.done");
 ```
-list.children;          // alle direkten <li>-Kinder (live HTMLCollection)
-list.children.length;   // Anzahl der Listenpunkte
-list.firstElementChild; // erster <li>-Punkt
-list.lastElementChild;  // letzter <li>-Punkt
-list.querySelectorAll("li.done"); // nur abgehakte Punkte, z. B. Todo-Liste
-```
 
-### SIDE-Note ul vs. ol
-`<ul>` und `<ol>` teilen sich dieselbe DOM-API (`children`, `append`, etc.) - der einzige Unterschied liegt in der Semantik und im `start`/`type`-Attribut von `<ol>` für nummerierte Listen. Gut zu wissen, falls ich mal zwischen beiden wechsle: am JS-Code ändert sich dabei nichts.
+Eine `ol` funktioniert in JavaScript grundsätzlich genauso, nur die Darstellung bzw. Bedeutung der Liste ist anders.
 
-### SELECT und OPTION
+## Select / Option
 
-Beim `<select>` bin ich wieder auf meinen alten `.val()`-Reflex aus dem `<input>`-Kapitel gestoßen - und tatsächlich: genau wie bei Text-Inputs heißt es auch hier `value`. Diesmal hab ich mich aber schon nicht mehr erschrocken, sondern direkt richtig geschrieben. Kleiner Fortschritt, aber ich merk ihn.
+Ein Select-Feld hat wie ein normales Textfeld eine `value`-Eigenschaft. So kann ich eine Auswahl lesen oder ändern.
 
-```
+```js
 // jQuery
 $("#meinSelect").val();
 $("#meinSelect").val("de");
-```
 
-```
-// Modernes JavaScript
+// JavaScript
 const select = document.querySelector("#meinSelect");
-select.value;        // aktuell ausgewählter Wert
-select.value = "de"; // Auswahl programmatisch setzen
+console.log(select.value);
+select.value = "de";
 ```
 
-Spannender fand ich das Erzeugen neuer `<option>`-Elemente - hier gibt's extra den `Option`-Konstruktor, den ich vorher noch nie gesehen hab, obwohl ich sonst immer brav `createElement` verwende:
+Neue Einträge lassen sich entweder mit `createElement` oder etwas kürzer mit `new Option()` hinzufügen.
 
-```
+```js
 // jQuery
 $("#meinSelect").append('<option value="at">Österreich</option>');
-```
 
-```
-// Modernes JavaScript - Variante 1: createElement wie gewohnt
+// JavaScript
 const option = document.createElement("option");
 option.value = "at";
 option.textContent = "Österreich";
 select.append(option);
 
-// Variante 2: der eigene Option()-Konstruktor
+// kürzere Variante
 const option2 = new Option("Österreich", "at");
 select.append(option2);
 ```
 
+Dazu passen folgende Eigenschaften:
+
+```js
+select.options;
+select.selectedIndex;
+select.selectedOptions;
+select.options[0].value;
+select.options[0].selected;
 ```
-select.options;           // alle <option>-Kinder (live HTMLCollection)
-select.selectedIndex;     // Index der aktuell ausgewählten Option
-select.selectedOptions;   // bei multiple: alle ausgewählten Optionen
-select.options[0].value;  // Wert der ersten Option
-select.options[0].selected; // true/false, ob diese Option ausgewählt ist
-```
 
-### SIDE-Note multiple select
-Bei `<select multiple>` reicht `select.value` nicht mehr, weil es nur den ersten ausgewählten Wert liefert. Dafür gibt's `select.selectedOptions`, eine Collection aller gerade markierten `<option>`-Elemente - die muss ich dann selbst durchlaufen (z. B. mit `Array.from(select.selectedOptions).map(o => o.value)`), um alle Werte zu bekommen. In jQuery war mir dieser Unterschied nie bewusst, weil `.val()` bei Multi-Selects einfach brav ein Array zurückgegeben hat.
+Bei `multiple` kann ich mehrere Einträge auswählen. `select.value` liefert dabei nicht alle Werte, dafür gibt es `selectedOptions`.
 
-### CANVAS
+## Canvas
 
-Beim `<canvas>` ist mir zum ersten Mal aufgefallen, dass der ganze jQuery-Vergleich hier gar nicht greift - jQuery hatte nie wirklich eine eigene API fürs Zeichnen, man ist immer direkt auf die native Canvas-API runter. Fühlt sich fast befreiend an, kein "früher/heute" im Kopf zu haben, sondern einfach komplett neues Terrain.
+Canvas ist etwas anders als die bisherigen HTML-Elemente. Über JavaScript zeichne ich auf einer Fläche, dafür brauche ich zuerst den 2D-Kontext. Einen eigenen jQuery-Ersatz gibt es dafür nicht wirklich.
 
-```
+```js
 const canvas = document.querySelector("#meineCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -402,15 +380,14 @@ ctx.fillStyle = "tomato";
 ctx.fill();
 ```
 
-Der erste Stolperstein: `canvas` selbst ist nur die Leinwand (DOM-Element), gezeichnet wird nie direkt auf `canvas`, sondern immer über den `context`, den ich mir via `getContext("2d")` holen muss. Ohne diesen Schritt geht nichts.
+Mit `fillRect()` wird hier ein Rechteck gezeichnet, danach ein Kreis mit `arc()`.
 
-```
-canvas.width;             // Breite in Pixel (Zeichenfläche, nicht CSS!)
-canvas.height;            // Höhe in Pixel (Zeichenfläche, nicht CSS!)
-ctx.clearRect(0, 0, canvas.width, canvas.height); // Fläche löschen
-ctx.fillText("Hallo", 10, 100); // Text zeichnen
-canvas.toDataURL();       // aktueller Inhalt als Base64-Bild-URL
+```js
+canvas.width;
+canvas.height;
+ctx.clearRect(0, 0, canvas.width, canvas.height);
+ctx.fillText("Hallo", 10, 100);
+canvas.toDataURL();
 ```
 
-### SIDE-Note width/height vs. CSS
-`canvas.width` und `canvas.height` (als Attribute oder Properties) bestimmen die tatsächliche Pixel-Auflösung der Zeichenfläche - das ist etwas komplett anderes als die Darstellungsgröße per CSS (`style.width`/`style.height`). Setze ich nur die CSS-Größe, wird die Zeichnung einfach hochskaliert und wirkt unscharf/verzerrt. Für scharfe Ergebnisse muss ich beides im Blick haben, im Idealfall sogar `canvas.width` an die Pixeldichte (`devicePixelRatio`) des Bildschirms anpassen. Das ist mir bei keinem anderen Element bisher untergekommen.
+Wichtig ist noch die Unterscheidung zwischen `canvas.width`/`canvas.height` und der Größe über CSS. Die ersten beiden Werte bestimmen die eigentliche Zeichenauflösung. Über CSS kann ich die Fläche zwar größer anzeigen, die Zeichnung wird dadurch aber nicht automatisch schärfer.
